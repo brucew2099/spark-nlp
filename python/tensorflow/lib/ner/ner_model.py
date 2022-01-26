@@ -311,17 +311,12 @@ class NerModel:
 
     @staticmethod
     def num_trues(array):
-        result = 0
-        for item in array:
-            if item == True:
-                result += 1
-
-        return result
+        return sum(item == True for item in array)
 
     @staticmethod
     def fill(array, l, val):
         result = array[:]
-        for i in range(l - len(array)):
+        for _ in range(l - len(array)):
             result.append(val)
         return result
 
@@ -335,14 +330,17 @@ class NerModel:
 
     @staticmethod
     def get_word_lengths(batch, idx="char_ids"):
-        max_words = max([len(row[idx]) for row in batch])
+        max_words = max(len(row[idx]) for row in batch)
         return [NerModel.fill([len(chars) for chars in row[idx]], max_words, 0)
                 for row in batch]
 
     @staticmethod
     def get_char_ids(batch, idx="char_ids"):
-        max_chars = max([max([len(char_ids) for char_ids in sentence[idx]]) for sentence in batch])
-        max_words = max([len(sentence[idx]) for sentence in batch])
+        max_chars = max(
+            max(len(char_ids) for char_ids in sentence[idx]) for sentence in batch
+        )
+
+        max_words = max(len(sentence[idx]) for sentence in batch)
 
         return [
             NerModel.fill(
@@ -353,8 +351,8 @@ class NerModel:
 
     @staticmethod
     def get_from_batch(batch, idx):
-        k = max([len(row[idx]) for row in batch])
-        return list([NerModel.fill(row[idx], k, 0) for row in batch])
+        k = max(len(row[idx]) for row in batch)
+        return [NerModel.fill(row[idx], k, 0) for row in batch]
 
     @staticmethod
     def get_tag_ids(batch, idx="tag_ids"):
@@ -363,12 +361,11 @@ class NerModel:
     @staticmethod
     def get_word_embeddings(batch, idx="word_embeddings"):
         embeddings_dim = len(batch[0][idx][0])
-        max_words = max([len(sentence[idx]) for sentence in batch])
+        max_words = max(len(sentence[idx]) for sentence in batch)
         return [
-            NerModel.fill([word_embedding for word_embedding in sentence[idx]],
-                          max_words, [0]*embeddings_dim
-                          )
-            for sentence in batch]
+            NerModel.fill(list(sentence[idx]), max_words, [0] * embeddings_dim)
+            for sentence in batch
+        ]
 
     @staticmethod
     def slice(dataset, batch_size=10):
@@ -459,9 +456,12 @@ class NerModel:
                     if p == c:
                         correct_predicted[p] = correct_predicted.get(p, 0) + 1
 
-        num_correct_predicted = sum([correct_predicted.get(i, 0) for i in range(1, self.ntags)])
-        num_predicted = sum([predicted.get(i, 0) for i in range(1, self.ntags)])
-        num_correct = sum([correct.get(i, 0) for i in range(1, self.ntags)])
+        num_correct_predicted = sum(
+            correct_predicted.get(i, 0) for i in range(1, self.ntags)
+        )
+
+        num_predicted = sum(predicted.get(i, 0) for i in range(1, self.ntags))
+        num_correct = sum(correct.get(i, 0) for i in range(1, self.ntags))
 
         prec = num_correct_predicted / (num_predicted or 1.)
         rec = num_correct_predicted / (num_correct or 1.)
@@ -502,11 +502,7 @@ class NerModel:
             batch_prediction = np.reshape(prediction, (len(batch), -1))
 
             for i in range(len(batch)):
-                sentence = []
-                for word in range(sentence_lengths[i]):
-                    tag = batch_prediction[i][word]
-                    sentence.append(tag)
-
+                sentence = [batch_prediction[i][word] for word in range(sentence_lengths[i])]
                 result.append(sentence)
 
         return result

@@ -15,8 +15,13 @@ class NerModelSaver:
     @staticmethod
     def restore_tensorflow_state(session, export_dir):
         with tf.device('/gpu:0'):
-            saveNodes = list([n.name for n in tf.get_default_graph().as_graph_def().node if n.name.startswith('save/')])
-            if len(saveNodes) == 0:
+            saveNodes = [
+                n.name
+                for n in tf.get_default_graph().as_graph_def().node
+                if n.name.startswith('save/')
+            ]
+
+            if not saveNodes:
                 saver = tf.train.Saver()
 
             variables_file = os.path.join(export_dir, 'variables')
@@ -24,8 +29,13 @@ class NerModelSaver:
         
     def save_models(self, folder):
         with tf.device('/gpu:0'):
-            saveNodes = list([n.name for n in tf.get_default_graph().as_graph_def().node if n.name.startswith('save/')])
-            if len(saveNodes) == 0:
+            saveNodes = [
+                n.name
+                for n in tf.get_default_graph().as_graph_def().node
+                if n.name.startswith('save/')
+            ]
+
+            if not saveNodes:
                 saver = tf.train.Saver()
 
             variables_file = os.path.join(folder, 'variables')
