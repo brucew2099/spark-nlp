@@ -5089,7 +5089,7 @@ class NerDLApproach(AnnotatorApproach, NerApproach):
     @keyword_only
     def __init__(self):
         super(NerDLApproach, self).__init__(classname="com.johnsnowlabs.nlp.annotators.ner.dl.NerDLApproach")
-        uc = False if sys.platform == 'win32' else True
+        uc = sys.platform != 'win32'
         self._setDefault(
             minEpochs=0,
             maxEpochs=50,
@@ -6820,9 +6820,7 @@ class SentenceEmbeddings(AnnotatorModel, HasEmbeddingsProperties, HasStorageRef)
         [type]
             [description]
         """
-        if strategy == "AVERAGE":
-            return self._set(poolingStrategy=strategy)
-        elif strategy == "SUM":
+        if strategy in ["AVERAGE", "SUM"]:
             return self._set(poolingStrategy=strategy)
         else:
             return self._set(poolingStrategy="AVERAGE")
@@ -7230,9 +7228,7 @@ class ChunkEmbeddings(AnnotatorModel):
         strategy : str
             Aggregation Strategy
         """
-        if strategy == "AVERAGE":
-            return self._set(poolingStrategy=strategy)
-        elif strategy == "SUM":
+        if strategy in ["AVERAGE", "SUM"]:
             return self._set(poolingStrategy=strategy)
         else:
             return self._set(poolingStrategy="AVERAGE")
@@ -7730,13 +7726,7 @@ class ElmoEmbeddings(AnnotatorModel, HasEmbeddingsProperties, HasCaseSensitivePr
         layer : str
             ELMO pooling layer
         """
-        if layer == "word_emb":
-            return self._set(poolingLayer=layer)
-        elif layer == "lstm_outputs1":
-            return self._set(poolingLayer=layer)
-        elif layer == "lstm_outputs2":
-            return self._set(poolingLayer=layer)
-        elif layer == "elmo":
+        if layer in ["word_emb", "lstm_outputs1", "lstm_outputs2", "elmo"]:
             return self._set(poolingLayer=layer)
         else:
             return self._set(poolingLayer="word_emb")

@@ -123,7 +123,7 @@ class RecursiveEstimator(JavaEstimator, ABC):
 
     def fit(self, dataset, params=None, pipeline=None):
         if params is None:
-            params = dict()
+            params = {}
         if isinstance(params, (list, tuple)):
             models = [None] * len(params)
             for index, model in self.fitMultiple(dataset, params):
@@ -148,7 +148,7 @@ class RecursiveTransformer(JavaModel):
 
     def transform_recursive(self, dataset, recursive_pipeline, params=None):
         if params is None:
-            params = dict()
+            params = {}
         if isinstance(params, dict):
             if params:
                 return self.copy(params)._transform_recursive(dataset, recursive_pipeline)
@@ -184,12 +184,10 @@ class ExtendedJavaWrapper(JavaWrapper):
         return java_array
 
     def new_java_array_string(self, pylist):
-        java_array = self._new_java_array(pylist, self.sc._gateway.jvm.java.lang.String)
-        return java_array
+        return self._new_java_array(pylist, self.sc._gateway.jvm.java.lang.String)
 
     def new_java_array_integer(self, pylist):
-        java_array = self._new_java_array(pylist, self.sc._gateway.jvm.java.lang.Integer)
-        return java_array
+        return self._new_java_array(pylist, self.sc._gateway.jvm.java.lang.Integer)
 
 
 class _RegexRule(ExtendedJavaWrapper):

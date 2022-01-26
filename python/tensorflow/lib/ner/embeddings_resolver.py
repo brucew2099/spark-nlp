@@ -101,9 +101,9 @@ class EmbeddingsDbResolver:
         """
         sentence - array of words
         """
-        embeddings =  list([self.get_embeddings(word) for word in sentence])
+        embeddings = [self.get_embeddings(word) for word in sentence]
         is_word_start = [True] * len(sentence)
-        
+
         return TokenEmbeddings.create_sentence(sentence, is_word_start, embeddings)
 
             
@@ -162,14 +162,13 @@ class BertEmbeddingsResolver:
             if len(result) > self.max_length - 2:
                 result = result[:self.max_length -2]
                 is_word_start = is_word_start[:self.max_length -2]
-            
+
             result = ['[CLS]'] + result + ['[SEP]']
             is_word_start = [False] + is_word_start + [False]
-        else:
-            if len(result) > self.max_length:
-                result = result[:self.max_length]
-                is_word_start = is_word_start[:self.max_length]
-        
+        elif len(result) > self.max_length:
+            result = result[:self.max_length]
+            is_word_start = is_word_start[:self.max_length]
+
         return (result, is_word_start)
 
     def resolve_sentences(self, sentences):
